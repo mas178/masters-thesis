@@ -1,4 +1,3 @@
-# In this version, "hop" is model parameter.
 module Simulation
 
 using Dates: format, now
@@ -62,54 +61,8 @@ pairwise_fermi(πᵢ::Float64, πⱼ::Float64, κ::Float64 = 0.1)::Float64 = 1 /
 function calc_payoffs!(model::Model)
     if model.interaction_rule == PairWise
         for agent in model.agents
-            # for opponent in model.neighbours_game[agent.id]
-            #     # おかしなスパイクが生じる
-            #     # if (agent.strategy, opponent.strategy) == (C, C)
-            #     #     agent.payoff += 1
-            #     # elseif (agent.strategy, opponent.strategy) == (C, D)
-            #     #     agent.payoff -= 0.0001
-            #     # elseif (agent.strategy, opponent.strategy) == (D, C)
-            #     #     agent.payoff += 1 + (1 / model.b)
-            #     # elseif (agent.strategy, opponent.strategy) == (D, D)
-            #     #     agent.payoff += 0
-            #     # end
-            #     # ↓ 一切協力が進化しない
-            #     # if (agent.strategy, opponent.strategy) == (C, C)
-            #     #     agent.payoff += (model.b - model.c)
-            #     # elseif (agent.strategy, opponent.strategy) == (C, D)
-            #     #     agent.payoff -= model.c
-            #     # elseif (agent.strategy, opponent.strategy) == (D, C)
-            #     #     agent.payoff += model.b
-            #     # elseif (agent.strategy, opponent.strategy) == (D, D)
-            #     #     agent.payoff += 0
-            #     # end
-            #     # ロジックをPGGに揃えた利得表。但し、bの値は 1 < b < 2 にする必要がある。
-            #     if (agent.strategy, opponent.strategy) == (C, C)
-            #         agent.payoff += (model.b - model.c)
-            #     elseif (agent.strategy, opponent.strategy) == (C, D)
-            #         agent.payoff += (model.b / 2 - model.c)
-            #     elseif (agent.strategy, opponent.strategy) == (D, C)
-            #         agent.payoff += (model.b / 2)
-            #     elseif (agent.strategy, opponent.strategy) == (D, D)
-            #         agent.payoff += 0
-            #     end
-            # end
-            # ↓ 公共財ゲームに揃える
-            # opponent = rand(model.neighbours_game[agent.id])
-            # if (agent.strategy, opponent.strategy) == (C, C)
-            #     agent.payoff += (model.b - model.c)
-            # elseif (agent.strategy, opponent.strategy) == (C, D)
-            #     agent.payoff += (model.b / 2 - model.c)
-            # elseif (agent.strategy, opponent.strategy) == (D, C)
-            #     agent.payoff += (model.b / 2)
-            # elseif (agent.strategy, opponent.strategy) == (D, D)
-            #     agent.payoff += 0
-            # end
-            
             # Scale-Free Networks Provide a Unifying Framework for the Emergence of Cooperation (Santos & Pacheco, 2005)
-            # Prisoner's Dilemma: T > R > T > S
             for opponent in model.neighbours_game[agent.id]
-                # opponent = rand(model.neighbours_game[agent.id])
                 if (agent.strategy, opponent.strategy) == (C, C)
                     agent.payoff += 1.0  # R
                 elseif (agent.strategy, opponent.strategy) == (C, D)
@@ -229,14 +182,14 @@ function run()
     trial_count = 28
     agent_count = 10^3  # 10^4
     generations = 10^6  # 10^5
-    network_type_list = [:regular_4]  # [:scale_free_4, :regular_4, :random_4]
-    hop_game_list = [1]  # [1, 2, 3, 4, 5, 6]
-    hop_learning_list = [1, 2, 3, 4, 5, 6]  # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    b_list = [1.1]  # [4.0, 4.5, 5.0, 5.5, 6.0] [1.1, 1.2, 1.3, 1.4, 1.5]
-    μ_list = [0.0]  # [0.0, 0.01]
-    δ_list = [0.01]  # [0.01, 0.1, 0.5, 1.0]
+    network_type_list = [:scale_free_4, :regular_4, :random_4]
+    hop_game_list = [1, 2, 3, 4, 5, 6]
+    hop_learning_list = [1, 2, 3, 4, 5, 6]
+    b_list = [1.1, 1.2, 1.3, 1.4, 1.5]  # [4.0, 4.5, 5.0, 5.5, 6.0] [1.1, 1.2, 1.3, 1.4, 1.5]
+    μ_list = [0.0, 0.01]
+    δ_list = [0.01, 0.1, 0.5, 1.0]
     interaction_rule_list = [PairWise]  # [PairWise, Group]
-    update_rule_list = [DB]  # [BD, DB, IM]
+    update_rule_list = [BD, DB, IM]
 
     simulation_pattern = vec(collect(Base.product(network_type_list, hop_game_list, hop_learning_list, b_list, μ_list, δ_list, interaction_rule_list, update_rule_list)))
     println("simulation_pattern: $(length(simulation_pattern))")
